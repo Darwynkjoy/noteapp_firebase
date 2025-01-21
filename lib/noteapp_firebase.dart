@@ -62,7 +62,14 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
                     Text(""+(Ds["category"] ?? "N/A"),style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.w700),),
                     Text(""+(Ds["subtitle"] ?? "N/A"),style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.w500),),
                     Spacer(),
-                    Text(""+(Ds["date"] ?? "N/A"),style: TextStyle(fontSize: 15,color: Colors.white),),
+                    Row(
+                      children: [
+                        Text(""+(Ds["date"] ?? "N/A"),style: TextStyle(fontSize: 15,color: Colors.white),),
+                        Spacer(),
+                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.red,)),
+                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
+                      ],
+                    ),
                   ],
                 ),
               ),
