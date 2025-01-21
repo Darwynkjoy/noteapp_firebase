@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:noteapp_firebase/database.dart';
@@ -41,7 +39,36 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
       if(!snapshot.hasData || snapshot.data!.docs.isEmpty){
         return Center(child: Text("Data is not available"));
       }
-      return ListView();
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8),
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (context,index){
+            DocumentSnapshot Ds=snapshot.data!.docs[index];
+            return Container(
+              height: 150,
+              width: 150,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.black,border: Border.all(width: 0.8,color: Colors.white)),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(""+(Ds["title"] ?? "N/A"),style: TextStyle(fontSize: 24,color: const Color.fromARGB(255, 251, 187, 187),fontWeight: FontWeight.bold),),
+                    Text(""+(Ds["category"] ?? "N/A"),style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.w700),),
+                    Text(""+(Ds["subtitle"] ?? "N/A"),style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.w500),),
+                    Spacer(),
+                    Text(""+(Ds["date"] ?? "N/A"),style: TextStyle(fontSize: 15,color: Colors.white),),
+                  ],
+                ),
+              ),
+            );
+          }),
+      );
     }
     );
   }
@@ -49,54 +76,69 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Noteapp Firebase Example"),
+        title: Text("Noteapp Firebase Example",style: TextStyle(fontSize: 25,color: Colors.white),),
         centerTitle: true,
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromARGB(255, 33, 33, 33)
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){
+
+      body: Container(
+        child: Column(
+          children: [
+            Expanded(child: allNoteDetails()),
+          ],
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromARGB(255, 33, 33, 33),
+        onPressed: (){
         showModalBottomSheet(context: context, builder: (BuildContext context){
           return Container(
             padding: EdgeInsets.all(5),
-            height: 400,
             width: 410,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color: Colors.red),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color: const Color.fromARGB(255, 33, 33, 33)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextField(
                   controller: titleControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                      fillColor: Colors.white,
+                      fillColor: Colors.black,
                       filled: true,
-                      hintText: "Title"),
+                      hintText: "Title",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
                 ),
                 TextField(
                   controller: subtitleControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                      fillColor: Colors.white,
+                      fillColor: Colors.black,
                       filled: true,
-                      hintText: "Subtitle"),
+                      hintText: "Subtitle",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
                 ),TextField(
                   controller: categoryControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                      fillColor: Colors.white,
+                      fillColor: Colors.black,
                       filled: true,
-                      hintText: "Category"),
+                      hintText: "Category",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
                 ),TextField(
                   controller: dateControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                      fillColor: Colors.white,
+                      fillColor:  Colors.black,
                       filled: true,
-                      hintText: "Date"),
+                      hintText: "Date",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -105,7 +147,7 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
                       width: 120,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor:  Colors.black,
                         ),
                         onPressed: ()async{
                           String id=randomAlphaNumeric(10);
@@ -116,6 +158,13 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
                               "date":dateControler.text,
                               "id":id,
                             };
+                            setState(() {
+                              titleControler.clear();
+                              subtitleControler.clear();
+                              categoryControler.clear();
+                              dateControler.clear();
+                              Navigator.pop(context);
+                            });
                             await Database.addNoteappDetails(noteappInfoMap,id);
                               showDialog(context: context, builder: (BuildContext context){
                                 return AlertDialog(
@@ -133,7 +182,7 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
                       width: 120,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor:  Colors.black,
                         ),
                         onPressed: (){
                           Navigator.pop(context);
@@ -146,7 +195,7 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
           );
         });
       },
-      child: Text("+",style: TextStyle(fontSize: 40,color: Colors.red),),),
+      child: Text("+",style: TextStyle(fontSize: 40,color: Colors.red,fontWeight: FontWeight.normal),),),
     );
   }
 }
