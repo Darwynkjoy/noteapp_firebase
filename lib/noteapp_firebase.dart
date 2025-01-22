@@ -66,8 +66,30 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
                       children: [
                         Text(""+(Ds["date"] ?? "N/A"),style: TextStyle(fontSize: 15,color: Colors.white),),
                         Spacer(),
-                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.red,)),
-                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
+                        IconButton(onPressed: (){
+                          titleControler.text=Ds["title"];
+                          subtitleControler.text=Ds["subtitle"];
+                          categoryControler.text=Ds["category"];
+                          dateControler.text=Ds["date"];
+                          editNoteappDetails(Ds["id"]);
+                        }, icon: Icon(Icons.edit,color: Colors.red,)),
+                        IconButton(onPressed: (){
+                          showDialog(context: context, builder: (BuildContext context){
+                            return AlertDialog(
+                              backgroundColor: const Color.fromARGB(255, 33, 33, 33),
+                                  title: Text("Do you want delete note?",style: TextStyle(color: Colors.white),),
+                                  actions: [
+                                    TextButton(onPressed: ()async{
+                                      Navigator.pop(context);
+                                      await Database.deleteNoteappDetails(Ds["id"]);  
+                                    }, child: Text("Delete",style: TextStyle(color: Colors.red),)),
+                                    TextButton(onPressed: (){
+                                      Navigator.pop(context);
+                                    }, child: Text("Cancel",style: TextStyle(color: Colors.red),)),
+                                  ],
+                                );
+                          });
+                        }, icon: Icon(Icons.delete,color: Colors.red,)),
                       ],
                     ),
                   ],
@@ -205,4 +227,88 @@ class _NoteappFirebaseExampleState extends State<NoteappFirebaseExample>{
       child: Text("+",style: TextStyle(fontSize: 40,color: Colors.red,fontWeight: FontWeight.normal),),),
     );
   }
+  Future editNoteappDetails(String id)=>showModalBottomSheet(context: context, builder: (BuildContext context){
+          return Container(
+            padding: EdgeInsets.all(5),
+            width: 410,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color: const Color.fromARGB(255, 33, 33, 33)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+          TextField(
+                  controller: titleControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                      fillColor: Colors.black,
+                      filled: true,
+                      hintText: "Title",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
+                ),
+                TextField(
+                  controller: subtitleControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                      fillColor: Colors.black,
+                      filled: true,
+                      hintText: "Subtitle",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
+                ),TextField(
+                  controller: categoryControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                      fillColor: Colors.black,
+                      filled: true,
+                      hintText: "Category",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
+                ),TextField(
+                  controller: dateControler,
+                  style: TextStyle(fontSize: 20,color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                      fillColor:  Colors.black,
+                      filled: true,
+                      hintText: "Date",hintStyle: TextStyle(color: Colors.white,fontSize: 20),),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      width: 120,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:  Colors.black,
+                        ),
+                        onPressed: ()async{
+                            Map<String,dynamic> updateInfo={
+                              "title":titleControler.text,
+                              "subtitle":subtitleControler.text,
+                              "category":categoryControler.text,
+                              "date":dateControler.text,
+                              "id":id,
+                            };
+                            await Database.updateNoteappDetails(id,updateInfo).then((value){
+                              Navigator.pop(context);
+                            });
+                        }, child: Text("Update",style: TextStyle(fontSize: 20,color: Colors.red),)),
+                    ),
+                    Container(
+                      width: 120,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:  Colors.black,
+                        ),
+                        onPressed: (){
+                          Navigator.pop(context);
+                        }, child: Text("Cancel",style: TextStyle(fontSize: 20,color: Colors.red),)),
+                    ),
+                  ],
+                )
+        ],
+      ),
+    );
+  });
 }
